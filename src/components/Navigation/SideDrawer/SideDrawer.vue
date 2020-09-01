@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import Aux from "../../../hoc/Aux";
+import Aux from "../../../hoc/_Aux";
 import Backdrop from "../../UI/Backdrop/Backdrop";
 import NavigationItems from "../NavigationItems/NavigationItems";
 import Logo from "../../Logo/Logo";
