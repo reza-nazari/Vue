@@ -14,7 +14,7 @@
         <p>price: {{ price }}$ </p>
         <p>Continue to checkout?</p>
 
-        <Button btnType="Danger" :clicked="cancelHandler">
+        <Button btnType="Danger" :clicked="cancelHandler" >
             Cancel
         </Button>
         <Button btnType="Success" :clicked="continueHandler">

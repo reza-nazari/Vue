@@ -2,35 +2,93 @@
     <div class="ContactData">
         <h4>Enter your Contact Data</h4>
         <form v-if="!loading">
-            <input
-                class="Input"
-                type="text"
-                name="name"
-                placeholder="Your name"
-                v-model="name"
-            />
-            <input
-                class="Input"
-                type="email"
-                name="email"
-                placeholder="Your mail"
-                v-model="email"
-            />
-            <input
-                class="Input"
-                type="text"
-                name="street"
-                placeholder="Your Street"
-                v-model="address.street"
-            />
-            <input
-                class="Input"
-                type="text"
-                name="postal"
-                placeholder="Postal Code"
-                v-model="address.postalCode"
-            />
-            <Button btnType="Success" :clicked="orderHandler">
+            <div class="Input">
+                <label for="name" class="Label">Name</label>
+                <input
+                    id="name"
+                    class="InputElement"
+                    :class="{Invalid: $v.name.$error}"
+                    type="text"
+                    name="name"
+                    placeholder="Your name"
+                    v-model="name"
+                    @input="$v.name.$touch()"
+                />
+                <p v-if="$v.name.$error">This field mustn't be empty! </p>
+            </div>
+            <div class="Input">
+                <label for="email" class="Label">Email</label>
+                <input
+                    type="email"
+                    class="InputElement"
+                    :class="{Invalid: $v.email.$error}"
+                    id="email"
+                    name="email"
+                    placeholder="Your mail"
+                    v-model="email"
+                    @input="$v.email.$touch()"
+                />
+            </div>
+            <div class="Input">
+                <label for="street" class="Label">Street</label>
+                <input
+                    id="street"
+                    class="InputElement"
+                    :class="{Invalid: $v.street.$error}"
+                    type="text"
+                    name="street"
+                    placeholder="Your Street"
+                    v-model="street"
+                    @input="$v.street.$touch()"
+                />
+            </div>
+
+            <div class="Input">
+                <label for="postal" class="Label">Zip Code</label>
+                <input
+                    type="text"
+                    class="InputElement"
+                    :class="{Invalid: $v.zipCode.$error}"
+                    id="postal"
+                    name="postal"
+                    placeholder="Postal Code"
+                    v-model="zipCode"
+                    @input="$v.zipCode.$touch()"
+                />
+                <p v-if="$v.zipCode.$error">This field must be 5 digits! </p>
+            </div>
+
+            <div class="Input">
+                <label for="country" class="Label">Street</label>
+                <input
+                    id="country"
+                    class="InputElement"
+                    :class="{Invalid: $v.country.$error}"
+                    type="text"
+                    name="country"
+                    placeholder="Your Country"
+                    v-model="country"
+                    @input="$v.country.$touch()"
+                />
+            </div>
+
+            <div class="Input">
+                <label for="delivery" class="Label">Delivery Method</label>
+                <select
+                    name="delivery"
+                    id="delivery"
+                    class="InputElement"
+                    v-model="delivery"
+                >
+                    <option value="fastest">Fastest</option>
+                    <option value="cheapest">Cheapest</option>
+                </select>
+            </div>
+            <Button
+                btnType="Success"
+                :clicked="orderHandler"
+                :disabled="$v.$invalid"
+            >
                 Order
             </Button>
         </form>
@@ -39,25 +97,52 @@
 </template>
 
 <script>
-import Button from "../../../components/UI/Button/Button";
-import Spinner from "../../../components/UI/Spinner/Spinner";
-import axios from "../../../axios-orders";
+import {
+    required,
+    email,
+    minLength,
+    maxLength,
+    numeric,
+} from 'vuelidate/lib/validators';
+import Button from '../../../components/UI/Button/Button';
+import Spinner from '../../../components/UI/Spinner/Spinner';
+import axios from '../../../axios-orders';
 export default {
     components: {
         Button,
         Spinner,
     },
-    props: ["ingredients", "totalPrice"],
+    props: ['ingredients', 'totalPrice'],
     data() {
         return {
-            name: "",
-            email: "",
-            address: {
-                street: "",
-                postalCode: "",
-            },
+            name: '',
+            email: '',
+            street: '',
+            zipCode: '',
+            country: '',
+            delivery: 'fastest',
             loading: false,
         };
+    },
+    validations: {
+        name: {
+            required,
+        },
+        email: {
+            required,
+            email,
+        },
+        street: {
+            required,
+        },
+        zipCode: {
+            required,
+            numeric,
+            minLength: minLength(5),
+        },
+        country: {
+            required,
+        },
     },
     methods: {
         orderHandler() {
@@ -67,23 +152,20 @@ export default {
             const order = {
                 ingredients: this.ingredients,
                 price: this.totalPrice,
-                customer: {
-                    name: "reza",
-                    address: {
-                        street: "TestStreet1",
-                        zipCode: "4531",
-                        country: "Iran",
-                    },
-                    email: "test@test.com",
-                    deliveryMethods: "fastest",
+                orderData: {
+                    name: this.name,
+                    email: this.email,
+                    street: this.street,
+                    zipCode: this.zipCode,
+                    country: this.country,
+                    delivery: this.delivery,
                 },
             };
-            console.log(order);
             axios
-                .post("/order.json", order)
+                .post('/order.json', order)
                 .then((response) => {
                     this.loading = false;
-                    this.$router.push("/");
+                    this.$router.push('/');
                 })
                 .catch((err) => {
                     this.loading = false;
@@ -105,7 +187,37 @@ export default {
 }
 
 .Input {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.Label {
+    font-weight: bold;
     display: block;
+    margin-bottom: 8px;
+    padding: 0;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.InputElement {
+    outline: none;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    font: inherit;
+    padding: 6px 10px;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+.InputElement:focus {
+    outline: none;
+    background-color: #ccc;
+}
+.Invalid {
+    border: 1px soild red;
+    background-color: #fda49a;
 }
 
 @media (min-width: 600px) {

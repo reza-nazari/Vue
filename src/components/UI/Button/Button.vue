@@ -1,12 +1,20 @@
 <template>
-    <button v-on:click="clicked" class="Button" :class="btnType">
+    <button v-on:click="clicked" class="Button" :class="btnType" :disabled="disabled">
         <slot></slot>
     </button>
 </template>
 
 <script>
 export default {
-    props: ["btnType", "clicked"],
+    // props: ['btnType', 'clicked', 'disabled'],
+    props: {
+        btnType: String,
+        clicked: Function,
+        disabled: {
+            type: Boolean,
+            required: false,
+        },
+    },
 };
 </script>
 
@@ -26,6 +34,11 @@ export default {
 .Button:first-of-type {
     margin-left: 0;
     padding-left: 0;
+}
+
+.Button:disabled {
+    cursor: not-allowed;
+    color: #ccc;
 }
 
 .Success {
